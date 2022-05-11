@@ -132,6 +132,11 @@ namespace DatabaseFirstLINQ
         {
             // Write a LINQ query that retreives all of the products in the shopping cart of the user who has the email "afton@gmail.com".
             // Then print the product's name, price, and quantity to the console.
+            var userCart = _context.ShoppingCarts.Include(user => user.User).Include(user => user.Product).Where(user => user.User.Email == "afton@gmail.com");
+            foreach (ShoppingCart prod in userCart)
+            {
+                Console.WriteLine(prod.Product.Name + ", $" + prod.Product.Price + ", " + prod.Quantity);
+            }
 
         }
 
@@ -140,6 +145,10 @@ namespace DatabaseFirstLINQ
             // Write a LINQ query that retreives all of the products in the shopping cart of the user who has the email "oda@gmail.com" and returns the sum of all of the products prices.
             // HINT: End of query will be: .Select(sc => sc.Product.Price).Sum();
             // Then print the total of the shopping cart to the console.
+            var cartTotal = _context.ShoppingCarts.Include(user => user.User).Include(user => user.Product)
+                .Where(user => user.User.Email == "oda@gmail.com").Select(sc => sc.Product.Price).Sum();
+            { Console.WriteLine("$" + cartTotal);
+            }
 
         }
 
@@ -147,6 +156,13 @@ namespace DatabaseFirstLINQ
         {
             // Write a LINQ query that retreives all of the products in the shopping cart of users who have the role of "Employee".
             // Then print the user's email as well as the product's name, price, and quantity to the console.
+            var employee = _context.UserRoles.Include(user => user.User).Where(user => user.Role.RoleName == "Employee").Select(user => user.UserId);
+            var employeeCart = _context.ShoppingCarts.Include(user => user.User).Include(user => user.Product).Where(user => employee.Contains(user.UserId));
+
+            foreach (var product in employeeCart)
+            {
+                Console.WriteLine(product.User.Email + " - " + product.Product.Name + " - $" + product.Product.Price + " - " + product.Quantity);
+            }
 
         }
 
