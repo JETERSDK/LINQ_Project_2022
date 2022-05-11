@@ -185,6 +185,14 @@ namespace DatabaseFirstLINQ
         private void ProblemTwelve()
         {
             // Create a new Product object and add that product to the Products table using LINQ.
+            Product newProduct = new Product()
+            {
+                Name = "Dog Food",
+                Description = "Salmon flavored food for your dog",
+                Price = 50
+            };
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
 
         }
 
@@ -205,6 +213,15 @@ namespace DatabaseFirstLINQ
         private void ProblemFourteen()
         {
             // Add the product you create to the user we created in the ShoppingCart junction table using LINQ.
+            var userId = _context.Users.Where(user => user.Email == "david@gmail.com").Select(user => user.Id).SingleOrDefault();
+            var productId = _context.Products.Where(prod => prod.Name == "Dog Food").Select(prod => prod.Id).SingleOrDefault();
+            ShoppingCart newCart = new ShoppingCart()
+            {
+                UserId = userId,
+                ProductId = productId
+            };
+            _context.ShoppingCarts.Add(newCart);
+            _context.SaveChanges();
 
         }
 
@@ -222,6 +239,10 @@ namespace DatabaseFirstLINQ
         private void ProblemSixteen()
         {
             // Update the price of the product you created to something different using LINQ.
+            var product = _context.Products.Where(prod => prod.Name == "Dog Food").SingleOrDefault();
+            product.Price = 60;
+            _context.Products.Update(product);
+            _context.SaveChanges();
 
         }
 
@@ -246,6 +267,9 @@ namespace DatabaseFirstLINQ
         private void ProblemEighteen()
         {
             // Delete the role relationship from the user who has the email "oda@gmail.com" using LINQ.
+            var userRole = _context.UserRoles.Where(ur => ur.User.Email == "oda@gmail.com").SingleOrDefault();
+            _context.UserRoles.Remove(userRole);
+            _context.SaveChanges();
 
         }
 
@@ -264,6 +288,9 @@ namespace DatabaseFirstLINQ
         private void ProblemTwenty()
         {
             // Delete the user with the email "oda@gmail.com" from the Users table using LINQ.
+            var user = _context.Users.Where(user => user.Email == "oda@gmail.com").SingleOrDefault();
+            _context.Users.Remove(user);
+            _context.SaveChanges();
 
         }
 
@@ -274,12 +301,49 @@ namespace DatabaseFirstLINQ
             // Prompt the user to enter in an email and password through the console.
             // Take the email and password and check if the there is a person that matches that combination.
             // Print "Signed In!" to the console if they exists and the values match otherwise print "Invalid Email or Password.".
+            Console.WriteLine("Please enter your email address");
+            string email = Console.ReadLine();
+
+            Console.WriteLine("Please enter your password");
+            string password = Console.ReadLine();
+
+            var user = _context.Users.Where(user => user.Email == $"{email}").SingleOrDefault();
+
+            try
+            {
+                if (user.Email == email && user.Password == password)
+                {
+                    Console.WriteLine("Signed In!");
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Invalid Email or Password.");
+            }
         }
 
         private void BonusTwo()
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
             // Display the total of each users shopping cart as well as the total of the toals to the console.
+            List<int> userId = _context.Users.Select(sc => sc.Id).ToList();
+ 
+            decimal? allUsers = 0;
+
+            foreach (int id in userId)
+            {
+                var carts = _context.ShoppingCarts.Where(user => user.User.Id == id).Select(sc => new { sc.Product.Price, sc.Quantity });
+
+                decimal? total = 0;
+
+                foreach (var product in carts)
+                {
+                    total += product.Price * product.Quantity;
+                }
+                Console.WriteLine($"User ID {id}'s shopping cart totals ${total}");
+                allUsers += total;
+            }
+                Console.WriteLine($"All users shopping carts total ${allUsers}");
         }
 
         // BIG ONE
