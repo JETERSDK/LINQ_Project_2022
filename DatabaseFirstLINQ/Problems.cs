@@ -74,13 +74,6 @@ namespace DatabaseFirstLINQ
         {
             // Write a LINQ query that gets each product that contains an "s" in the products name.
             // Then print the name of each product from the above query to the console.
-
-        }
-
-        private void ProblemFive()
-        {
-            // Write a LINQ query that gets all of the users who registered BEFORE 2016
-            // Then print each user's email and registration date to the console.
             var products = _context.Products.Where(n => n.Name.Contains("s"));
             foreach (var product in products)
             {
@@ -89,10 +82,36 @@ namespace DatabaseFirstLINQ
 
         }
 
+        private void ProblemFive()
+        {
+            // Write a LINQ query that gets all of the users who registered BEFORE 2016
+            // Then print each user's email and registration date to the console.
+            var users = _context.Users;
+            var beforeDate = new DateTime(2016, 1, 1, 0, 0, 0);
+
+            var userBeforeDate = users.Where(user => beforeDate > user.RegistrationDate);
+
+            foreach (var userDate in userBeforeDate)
+            {
+                Console.WriteLine(userDate.Email + " - " + userDate.RegistrationDate);
+            }
+
+        }
+
         private void ProblemSix()
         {
             // Write a LINQ query that gets all of the users who registered AFTER 2016 and BEFORE 2018
             // Then print each user's email and registration date to the console.
+            var users = _context.Users;
+            var beforeDate = new DateTime(2018, 1, 1, 0, 0, 0);
+            var afterDate = new DateTime(2016, 1, 1, 0, 0, 0);
+
+            var userDate = users.Where(user => beforeDate > user.RegistrationDate && user.RegistrationDate > afterDate);
+
+            foreach (var date in userDate)
+            {
+                Console.WriteLine(date.Email + " - " + date.RegistrationDate);
+            }
 
         }
 
